@@ -1,0 +1,11 @@
+torch>=2.1.0
+transformers>=4.41.2
+datasets>=2.19.0
+accelerate>=0.30.1
+bitsandbytes>=0.43.1
+peft>=0.11.1
+trl>=0.8.6
+unsloth>=2024.6.20
+huggingface_hub>=0.23.3
+packaging>=23.0
+xformers==0.0.27

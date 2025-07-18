@@ -1,0 +1,33 @@
+# Byte-compiled / optimized / DLL 
+__pycache__/
+*.py[cod]
+*.so
+
+# Output directory
+outputs/
+models/
+*.ckpt
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VS Code settings
+.vscode/
+
+# Mac OS / Linux system files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+*.env
+.env.*
+
+# Python virtual environments
+venv/
+env/
+*.egg-info/
+
+# Huggingface cache
+~/.cache/huggingface/
+.cache/
