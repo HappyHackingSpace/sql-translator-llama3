@@ -51,9 +51,9 @@ To push the trained model to your organization:
 ```python
 from huggingface_hub import create_repo, upload_folder
 
-create_repo("HappyHackingSpace/sql-translator-llama3", private=False, exist_ok=True)
+create_repo("your-huggingface-username/sql-translator-llama3", private=False, exist_ok=True)
 upload_folder(
-    repo_id="HappyHackingSpace/sql-translator-llama3",
+    repo_id="your-huggingface-username/sql-translator-llama3",
     folder_path="outputs/sql_translator_model",
     commit_message="Initial model push"
 )

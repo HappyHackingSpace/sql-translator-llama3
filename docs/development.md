@@ -10,9 +10,6 @@ This document is intended for developers contributing to the SQL Translator fine
 sql-translator-llama3/
 ├── src/
 │   └── fine_tune.py
-├── outputs/
-├── models/
-├── data/
 ├── requirements.txt
 ├── .gitignore
 ├── LICENSE
@@ -21,12 +18,15 @@ sql-translator-llama3/
 ├── CODE_OF_CONDUCT.md
 ├── .github/
 │   ├── ISSUE_TEMPLATE/
+│   │   ├── bug_report.md
+│   │   └── feature_request.md
 │   └── pull_request_template.md
 └── docs/
     ├── getting-started.md
     ├── api-reference.md
     ├── development.md
     └── examples/
+        └── sql_prompt_example.md
 ```
 
 ---
@@ -71,9 +71,9 @@ When pushing a trained model:
 ```python
 from huggingface_hub import create_repo, upload_folder
 
-create_repo("HappyHackingSpace/sql-translator-llama3", private=False, exist_ok=True)
+create_repo("your-huggingface-username/sql-translator-llama3", private=False, exist_ok=True)
 upload_folder(
-    repo_id="HappyHackingSpace/sql-translator-llama3",
+    repo_id="your-huggingface-username/sql-translator-llama3",
     folder_path="outputs/sql_translator_model",
     commit_message="Push from dev machine"
 )
