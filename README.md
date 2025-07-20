@@ -164,6 +164,40 @@ tokenizer = AutoTokenizer.from_pretrained("happyhackingspace/sql-translator-llam
 model = AutoModelForCausalLM.from_pretrained("happyhackingspace/sql-translator-llama3")
 ```
 
+### Example Inference
+
+You can test the model with a sample prompt using Transformers:
+
+```python
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
+
+tokenizer = AutoTokenizer.from_pretrained("happyhackingspace/sql-translator-llama3")
+model = AutoModelForCausalLM.from_pretrained("happyhackingspace/sql-translator-llama3")
+
+prompt = """
+Below is an instruction that describes a task, paired with an input that provides further context.
+Write a response that appropriately completes the request.
+
+### Instruction
+Company database: The `employees` table contains employee_id, first_name, last_name, salary, department_id.
+
+### Input:
+SQL Prompt: Retrieve the first and last name of employees earning over 100000.
+
+### Response:
+SQL :
+"""
+
+inputs = tokenizer(prompt, return_tensors="pt")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = model.to(device)
+inputs = inputs.to(device)
+
+outputs = model.generate(**inputs, max_new_tokens=128)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+```
+
 ---
 
 ## Contact
