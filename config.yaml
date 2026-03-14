@@ -1,0 +1,37 @@
+model:
+  name: "unsloth/Meta-Llama-3.1-8B"
+  max_seq_length: 1024
+  load_in_4bit: true
+
+training:
+  batch_size: 2
+  gradient_accumulation_steps: 2
+  num_epochs: 1
+  learning_rate: 2e-4
+  warmup_steps: 10
+  weight_decay: 0.01
+  lr_scheduler: "linear"
+  optimizer: "adamw_8bit"
+  logging_steps: 10
+  seed: 3407
+
+lora:
+  r: 16
+  alpha: 16
+  dropout: 0
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+
+dataset:
+  name: "gretelai/synthetic_text_to_sql"
+  max_samples: null  # set a number to limit dataset size (e.g. 1000)
+
+output:
+  dir: "outputs/sql_translator_model"
+  checkpoints_dir: "outputs"

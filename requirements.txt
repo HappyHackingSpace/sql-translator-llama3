@@ -7,5 +7,5 @@ peft>=0.11.1
 trl>=0.8.6
 unsloth>=2024.6.20
 huggingface_hub>=0.23.3
-packaging>=23.0
-xformers==0.0.27
+pyyaml>=6.0
+xformers>=0.0.27
