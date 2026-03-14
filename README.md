@@ -1,16 +1,14 @@
-# SQL Translator – Fine-Tuning LLaMA 3 with Unsloth
+# SQL Translator - Fine-Tuning LLaMA 3 with Unsloth
 
 Fine-tuning pipeline for SQL generation from natural language using LLaMA 3 8B.
 Built by [Happy Hacking Space](https://github.com/HappyHackingSpace).
 
 ## Overview
 
-| | |
-|---|---|
-| Base Model | `unsloth/Meta-Llama-3.1-8B` |
-| Dataset | `gretelai/synthetic_text_to_sql` |
-| Trained Model | [happyhackingspace/sql-translator-llama3](https://huggingface.co/happyhackingspace/sql-translator-llama3) |
-| Tuning | LoRA (4-bit) via `unsloth` + `trl` |
+- **Base Model:** `unsloth/Meta-Llama-3.1-8B`
+- **Dataset:** `gretelai/synthetic_text_to_sql`
+- **Trained Model:** [happyhackingspace/sql-translator-llama3](https://huggingface.co/happyhackingspace/sql-translator-llama3)
+- **Tuning:** LoRA (4-bit) via `unsloth` + `trl`
 
 ## Setup
 
@@ -25,7 +23,7 @@ pip install -r requirements.txt
 **Train:**
 
 ```bash
-python src/fine_tune.py                        # default config
+python src/fine_tune.py                         # default config
 python src/fine_tune.py --config my_config.yaml # custom config
 ```
 
@@ -61,7 +59,7 @@ dataset:
 
 | Setup | RAM |
 |---|---|
-| LLaMA 3 8B (4-bit) | ~12–16 GB |
+| LLaMA 3 8B (4-bit) | ~12-16 GB |
 | LLaMA 3 8B (fp16) | ~32 GB |
 
 Recommended GPUs: A100, H100, 2x3090, 2x4090
@@ -78,4 +76,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.
 
 ## License
 
-MIT — see [LICENSE](LICENSE) — © 2025 [Happy Hacking Space](https://github.com/HappyHackingSpace)
+MIT License. See [LICENSE](LICENSE).
+
+Copyright 2025 [Happy Hacking Space](https://github.com/HappyHackingSpace)
