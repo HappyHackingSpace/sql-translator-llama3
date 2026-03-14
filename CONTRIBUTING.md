@@ -1,47 +1,41 @@
-# Contributing to SQL Translator (LLaMA 3 Fine-Tuning)
+# Contributing
 
-We welcome contributions from the community! Whether it's bug fixes, new features, improved documentation, or examples, you're invited to participate.
+We welcome contributions — bug fixes, features, docs, examples.
 
 ## Getting Started
 
-1. Fork the repository  
-2. Clone your fork:  
-   ```bash  
-   git clone https://github.com/HappyHackingSpace/sql-translator-llama3.git  
-   ```  
-3. Create a new branch:  
-   ```bash  
-   git checkout -b feature/my-feature-name  
-   ```  
+1. Fork the repository
+2. Clone your fork:
+   ```bash
+   git clone https://github.com/HappyHackingSpace/sql-translator-llama3.git
+   ```
+3. Create a branch:
+   ```bash
+   git checkout -b feature/my-feature-name
+   ```
+4. Set up the environment:
+   ```bash
+   conda create -n sqlft python=3.10 -y && conda activate sqlft
+   pip install -r requirements.txt
+   ```
 
-## Development Guidelines
+## Guidelines
 
-- Follow Python best practices (PEP8)  
-- Modularize your code  
-- Write docstrings for public functions/classes  
-- Avoid hardcoded paths or credentials  
+- Follow PEP8
+- Keep code modular
+- Avoid hardcoded paths or credentials
+- Test your changes with `python src/fine_tune.py` and `python src/evaluate.py`
 
-## Testing
+## Pull Requests
 
-We expect contributions to include basic testing where possible.  
-If relevant, test against real or mock datasets.
+1. Ensure your code runs without errors
+2. Include a meaningful title and description
+3. Link related issues if applicable
 
-## Pull Request Process
+## Issues
 
-1. Ensure your code builds and runs  
-2. Include a meaningful title and description  
-3. Link to related issues if applicable  
-4. Mark checkboxes in the pull request template  
-
-## Reporting Issues
-
-Use the GitHub Issues tab to report bugs or suggest features.  
-Please follow the issue templates.
+Use the GitHub Issues tab with the provided templates.
 
 ## Code of Conduct
 
-This project adheres to a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold it.
-
----
-
-Thank you for being part of the community!
+See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).

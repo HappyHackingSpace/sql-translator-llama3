@@ -1,11 +1,12 @@
 import argparse
 import json
-from datasets import load_dataset
+from datasets import load_dataset, load_from_disk
 from unsloth import FastLanguageModel
 from inference import generate_sql, MAX_SEQ_LENGTH
 
 DEFAULT_MODEL_PATH = "outputs/sql_translator_model"
 HF_MODEL_ID = "happyhackingspace/sql-translator-llama3"
+VAL_DATASET_PATH = "outputs/val_dataset"
 
 
 def load_model(model_path, load_in_4bit=True):
@@ -19,16 +20,25 @@ def load_model(model_path, load_in_4bit=True):
     return model, tokenizer
 
 
+def load_eval_dataset(dataset_name, num_samples, seed=3407):
+    try:
+        dataset = load_from_disk(VAL_DATASET_PATH)
+        print(f"Loaded validation set from {VAL_DATASET_PATH} ({len(dataset)} samples)")
+    except FileNotFoundError:
+        print(f"No saved validation set found, splitting from {dataset_name}")
+        full = load_dataset(dataset_name, split="train")
+        dataset = full.train_test_split(test_size=0.05, seed=seed)["test"]
+
+    if num_samples:
+        dataset = dataset.select(range(min(num_samples, len(dataset))))
+    return dataset
+
+
 def normalize_sql(sql):
     return " ".join(sql.lower().strip().rstrip(";").split())
 
 
-def evaluate(model, tokenizer, dataset_name, num_samples, split="train"):
-    dataset = load_dataset(dataset_name, split=split)
-
-    if num_samples:
-        dataset = dataset.select(range(min(num_samples, len(dataset))))
-
+def evaluate(model, tokenizer, dataset):
     exact_match = 0
     total = len(dataset)
     results = []
@@ -50,7 +60,7 @@ def evaluate(model, tokenizer, dataset_name, num_samples, split="train"):
         })
 
         if (i + 1) % 10 == 0:
-            print(f"  [{i+1}/{total}] Exact match so far: {exact_match}/{i+1} ({exact_match/(i+1)*100:.1f}%)")
+            print(f"  [{i+1}/{total}] Exact match: {exact_match}/{i+1} ({exact_match/(i+1)*100:.1f}%)")
 
     accuracy = exact_match / total * 100
     print(f"\nResults: {exact_match}/{total} exact match ({accuracy:.1f}%)")
@@ -70,9 +80,11 @@ def main():
     model_path = HF_MODEL_ID if args.hf else args.model
     print(f"Loading model from: {model_path}")
     model, tokenizer = load_model(model_path, load_in_4bit=not args.no_4bit)
-    print(f"Evaluating on {args.num_samples} samples from {args.dataset}\n")
 
-    results, accuracy = evaluate(model, tokenizer, args.dataset, args.num_samples)
+    dataset = load_eval_dataset(args.dataset, args.num_samples)
+    print(f"Evaluating on {len(dataset)} samples\n")
+
+    results, accuracy = evaluate(model, tokenizer, dataset)
 
     if args.output:
         with open(args.output, "w") as f:

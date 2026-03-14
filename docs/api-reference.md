@@ -1,73 +1,48 @@
 # API Reference
 
-This document explains the core components of the SQL Translator fine-tuning pipeline based on the `src/fine_tune.py` script.
+## `src/fine_tune.py`
+
+### `load_config(path) -> dict`
+Loads YAML config file.
+
+### `load_model(cfg) -> (model, tokenizer)`
+Loads the base model and applies LoRA. All parameters come from `config.yaml`.
+
+### `load_and_prepare_dataset(tokenizer, cfg) -> (train_dataset, val_dataset)`
+Loads the dataset, applies train/validation split, and formats prompts in Alpaca style.
+
+### `train_model(model, tokenizer, dataset, cfg)`
+Runs SFT training and saves the model to the configured output directory.
 
 ---
 
-## File: `src/fine_tune.py`
+## `src/inference.py`
 
-### Function: `load_model()`
+### `load_model(model_path, load_in_4bit=True) -> (model, tokenizer)`
+Loads a fine-tuned model for inference.
 
-Loads the Unsloth LLaMA 3 model and prepares it for LoRA fine-tuning.
+### `generate_sql(model, tokenizer, db_schema, question, ...) -> dict`
+Generates SQL from natural language. Returns `{"sql": ..., "explanation": ...}`.
 
-**Returns:**  
-- `model`: LoRA-enabled model ready for training  
-- `tokenizer`: Corresponding tokenizer  
-
-**Key Parameters:**  
-- `model_name`: unsloth/Meta-Llama-3.1-8B  
-- `load_in_4bit`: True  
-- `max_seq_length`: 1024  
-- `use_gradient_checkpointing`: Enabled  
-- `lora_r`, `lora_alpha`, `lora_dropout`: Set to typical values
+### `parse_response(response) -> dict`
+Splits raw model output into SQL and explanation parts.
 
 ---
 
-### Function: `load_and_prepare_dataset()`
+## `src/evaluate.py`
 
-Loads the `gretelai/synthetic_text_to_sql` dataset and formats each example using Alpaca-style prompts.
+### `load_eval_dataset(dataset_name, num_samples, seed) -> dataset`
+Loads the saved validation set, or creates a split if not available.
 
-**Returns:**  
-- `train_dataset`: Dataset containing formatted `text` fields for SFT training
+### `evaluate(model, tokenizer, dataset) -> (results, accuracy)`
+Runs exact match evaluation and prints progress.
 
-**Prompt Format:**  
-```text  
-Below is an instruction that describes a task, paired with an input...
+---
 
-Company database: {db}
+## CLI Usage
 
-SQL Prompt: {prompt}
-
-SQL : {sql}
-
-Explanation: {explanation}
+```bash
+python src/fine_tune.py --config config.yaml
+python src/inference.py --hf --schema "..." --question "..."
+python src/evaluate.py --hf --num-samples 100 --output results.json
 ```
-
----
-
-### Function: `train_model(model, tokenizer, dataset)`
-
-Creates a `SFTTrainer` instance from Hugging Face TRL and performs one epoch of fine-tuning.
-
-**Args:**  
-- `model`: LoRA-wrapped LLaMA 3 model  
-- `tokenizer`: Tokenizer from Unsloth  
-- `dataset`: Formatted instruction dataset  
-
-**Trainer Settings:**  
-- `per_device_train_batch_size`: 2  
-- `gradient_accumulation_steps`: 2  
-- `learning_rate`: 2e-4  
-- `optim`: adamw_8bit  
-- `output_dir`: outputs/sql_translator_model  
-
----
-
-### Constants
-
-- `MAX_SEQ_LENGTH = 1024`  
-- `LEARNING_RATE = 2e-4`  
-- `SEED = 3407`  
-- `OUTPUT_DIR = outputs/sql_translator_model`  
-
-See `src/fine_tune.py` for full implementation.

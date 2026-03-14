@@ -41,14 +41,19 @@ def load_and_prepare_dataset(tokenizer, cfg):
             texts.append(text)
         return {"text": texts}
 
-    train_dataset = dataset["train"]
+    full_dataset = dataset["train"]
 
     max_samples = cfg["dataset"].get("max_samples")
     if max_samples:
-        train_dataset = train_dataset.select(range(min(max_samples, len(train_dataset))))
+        full_dataset = full_dataset.select(range(min(max_samples, len(full_dataset))))
 
-    train_dataset = train_dataset.map(formatting_prompts_func, batched=True, num_proc=1)
-    return train_dataset
+    val_split = cfg["dataset"].get("validation_split", 0.05)
+    split = full_dataset.train_test_split(test_size=val_split, seed=cfg["training"]["seed"])
+    train_dataset = split["train"].map(formatting_prompts_func, batched=True, num_proc=1)
+    val_dataset = split["test"]
+
+    print(f"Dataset: {len(train_dataset)} train, {len(val_dataset)} validation")
+    return train_dataset, val_dataset
 
 
 def load_model(cfg):
@@ -114,5 +119,6 @@ if __name__ == "__main__":
 
     cfg = load_config(args.config)
     model, tokenizer = load_model(cfg)
-    train_dataset = load_and_prepare_dataset(tokenizer=tokenizer, cfg=cfg)
+    train_dataset, val_dataset = load_and_prepare_dataset(tokenizer=tokenizer, cfg=cfg)
     train_model(model, tokenizer, train_dataset, cfg)
+    val_dataset.save_to_disk(cfg["output"]["checkpoints_dir"] + "/val_dataset")

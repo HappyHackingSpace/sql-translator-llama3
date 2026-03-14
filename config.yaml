@@ -30,7 +30,8 @@ lora:
 
 dataset:
   name: "gretelai/synthetic_text_to_sql"
-  max_samples: null  # set a number to limit dataset size (e.g. 1000)
+  max_samples: null
+  validation_split: 0.05
 
 output:
   dir: "outputs/sql_translator_model"
