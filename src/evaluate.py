@@ -1,12 +1,21 @@
 import argparse
 import json
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(__file__))
+
+import yaml
 from datasets import load_dataset, load_from_disk
 from unsloth import FastLanguageModel
 from inference import generate_sql, MAX_SEQ_LENGTH
 
-DEFAULT_MODEL_PATH = "outputs/sql_translator_model"
 HF_MODEL_ID = "happyhackingspace/sql-translator-llama3"
-VAL_DATASET_PATH = "outputs/val_dataset"
+
+
+def load_config(path):
+    with open(path) as f:
+        return yaml.safe_load(f)
 
 
 def load_model(model_path, load_in_4bit=True):
@@ -20,14 +29,19 @@ def load_model(model_path, load_in_4bit=True):
     return model, tokenizer
 
 
-def load_eval_dataset(dataset_name, num_samples, seed=3407):
+def load_eval_dataset(cfg, num_samples):
+    val_path = os.path.join(cfg["output"]["checkpoints_dir"], "val_dataset")
+    seed = cfg["training"]["seed"]
+    dataset_name = cfg["dataset"]["name"]
+    val_split = cfg["dataset"].get("validation_split", 0.05)
+
     try:
-        dataset = load_from_disk(VAL_DATASET_PATH)
-        print(f"Loaded validation set from {VAL_DATASET_PATH} ({len(dataset)} samples)")
-    except FileNotFoundError:
+        dataset = load_from_disk(val_path)
+        print(f"Loaded validation set from {val_path} ({len(dataset)} samples)")
+    except (FileNotFoundError, FileExistsError, OSError):
         print(f"No saved validation set found, splitting from {dataset_name}")
         full = load_dataset(dataset_name, split="train")
-        dataset = full.train_test_split(test_size=0.05, seed=seed)["test"]
+        dataset = full.train_test_split(test_size=val_split, seed=seed)["test"]
 
     if num_samples:
         dataset = dataset.select(range(min(num_samples, len(dataset))))
@@ -69,19 +83,27 @@ def evaluate(model, tokenizer, dataset):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, default=DEFAULT_MODEL_PATH)
+    parser.add_argument("--config", type=str, default="config.yaml")
+    parser.add_argument("--model", type=str, default=None)
     parser.add_argument("--hf", action="store_true")
-    parser.add_argument("--dataset", type=str, default="gretelai/synthetic_text_to_sql")
     parser.add_argument("--num-samples", type=int, default=50)
     parser.add_argument("--output", type=str, default=None)
     parser.add_argument("--no-4bit", action="store_true")
     args = parser.parse_args()
 
-    model_path = HF_MODEL_ID if args.hf else args.model
+    cfg = load_config(args.config)
+
+    if args.hf:
+        model_path = HF_MODEL_ID
+    elif args.model:
+        model_path = args.model
+    else:
+        model_path = cfg["output"]["dir"]
+
     print(f"Loading model from: {model_path}")
     model, tokenizer = load_model(model_path, load_in_4bit=not args.no_4bit)
 
-    dataset = load_eval_dataset(args.dataset, args.num_samples)
+    dataset = load_eval_dataset(cfg, args.num_samples)
     print(f"Evaluating on {len(dataset)} samples\n")
 
     results, accuracy = evaluate(model, tokenizer, dataset)

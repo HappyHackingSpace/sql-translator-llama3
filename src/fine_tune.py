@@ -1,4 +1,5 @@
 import argparse
+import os
 import yaml
 from datasets import load_dataset
 from transformers import TrainingArguments
@@ -121,4 +122,4 @@ if __name__ == "__main__":
     model, tokenizer = load_model(cfg)
     train_dataset, val_dataset = load_and_prepare_dataset(tokenizer=tokenizer, cfg=cfg)
     train_model(model, tokenizer, train_dataset, cfg)
-    val_dataset.save_to_disk(cfg["output"]["checkpoints_dir"] + "/val_dataset")
+    val_dataset.save_to_disk(os.path.join(cfg["output"]["checkpoints_dir"], "val_dataset"))
