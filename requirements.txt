@@ -8,4 +8,4 @@ trl>=0.8.6
 unsloth>=2024.6.20
 huggingface_hub>=0.23.3
 pyyaml>=6.0
-xformers>=0.0.27
+xformers>=0.0.35
