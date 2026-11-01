@@ -74,6 +74,10 @@ Recommended GPUs: A100, H100, 2x3090, 2x4090
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=HappyHackingSpace/sql-translator-llama3&type=Date)](https://star-history.com/#HappyHackingSpace/sql-translator-llama3&Date)
+
 ## License
 
 MIT License. See [LICENSE](LICENSE).
